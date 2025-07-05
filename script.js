@@ -1,4 +1,3 @@
-
 let timeLeft = document.querySelector(".time-left");
 let quizContainer = document.getElementById("container");
 let nextBtn = document.getElementById("next-button");
@@ -9,56 +8,49 @@ let restart = document.getElementById("restart");
 let userScore = document.getElementById("user-score");
 let startScreen = document.querySelector(".start-screen");
 let startButton = document.getElementById("start-button");
-let questionCount;
+
+let questionCount = 0;
 let scoreCount = 0;
 let count = 11;
 let countdown;
 
 const quizArray = [
   {
-    id: "0",
     question: "Which is the most widely spoken language in the world?",
     options: ["Spanish", "Mandarin", "English", "German"],
     correct: "Mandarin",
   },
   {
-    id: "1",
     question: "Which is the only continent in the world without a desert?",
     options: ["North America", "Asia", "Africa", "Europe"],
     correct: "Europe",
   },
   {
-    id: "2",
     question: "Who invented Computer?",
     options: ["Charles Babbage", "Henry Luce", "Henry Babbage", "Charles Luce"],
     correct: "Charles Babbage",
   },
   {
-    id: "3",
     question: "What is the capital of France?",
     options: ["Berlin", "Madrid", "Rome", "Paris"],
     correct: "Paris",
   },
   {
-    id: "4",
     question: "Which planet is known as the Red Planet?",
     options: ["Venus", "Mars", "Jupiter", "Saturn"],
     correct: "Mars",
   },
   {
-    id: "5",
     question: "What is the largest mammal in the world?",
     options: ["Giraffe", "Elephant", "Blue Whale", "Hippopotamus"],
     correct: "Blue Whale",
   },
   {
-    id: "6",
     question: "Which gas do plants absorb from the atmosphere?",
     options: ["Oxygen", "Carbon Dioxide", "Hydrogen", "Nitrogen"],
     correct: "Carbon Dioxide",
   },
   {
-    id: "7",
     question: "What is the chemical symbol for gold?",
     options: ["Go", "Gd", "Au", "Ag"],
     correct: "Au",
@@ -72,21 +64,15 @@ restart.addEventListener("click", () => {
 });
 
 nextBtn.addEventListener("click", () => {
- 
   questionCount += 1;
+  nextBtn.disabled = true;
 
   if (questionCount === quizArray.length) {
-  
     displayContainer.classList.add("hide");
     scoreContainer.classList.remove("hide");
-  
-    userScore.innerHTML =
-      "Your score is " + scoreCount + " out of " + questionCount;
+    userScore.innerHTML = "Your score is " + scoreCount + " out of " + quizArray.length;
   } else {
-   
-    countOfQuestion.innerHTML =
-      questionCount + 1 + " of " + quizArray.length + " questions";
-
+    countOfQuestion.innerHTML = questionCount + 1 + " of " + quizArray.length + " questions";
     quizDisplay(questionCount);
     count = 11;
     clearInterval(countdown);
@@ -97,66 +83,72 @@ nextBtn.addEventListener("click", () => {
 const timerDisplay = () => {
   countdown = setInterval(() => {
     count--;
-    timeLeft.innerHTML = ${count}s;
+    timeLeft.innerHTML = `${count}s`;
     if (count === 0) {
       clearInterval(countdown);
-      nextBtn.click();
+      autoRevealAnswer();
+      setTimeout(() => nextBtn.click(), 1000);
     }
   }, 1000);
 };
 
-const quizDisplay = (questionCount) => {
-  let quizCards = document.querySelectorAll(".container-mid");
-  
-  quizCards.forEach((card) => {
-    card.classList.add("hide");
-  });
+function autoRevealAnswer() {
+  let question = document.getElementsByClassName("container-mid")[questionCount];
+  let options = question.querySelectorAll(".option-div");
 
-  quizCards[questionCount].classList.remove("hide");
+  options.forEach((element) => {
+    if (element.innerText === quizArray[questionCount].correct) {
+      element.classList.add("correct");
+    }
+    element.disabled = true;
+  });
+}
+
+const quizDisplay = (index) => {
+  let quizCards = document.querySelectorAll(".container-mid");
+  quizCards.forEach((card) => card.classList.add("hide"));
+  quizCards[index].classList.remove("hide");
+  nextBtn.disabled = false;
 };
 
 function quizCreator() {
+  const shuffledQuiz = [...quizArray].sort(() => Math.random() - 0.5);
 
-  quizArray.sort(() => Math.random() - 0.5);
-  
-  for (let i of quizArray) {
-    
-    i.options.sort(() => Math.random() - 0.5);
-    
+  shuffledQuiz.forEach((item) => {
+    item.options.sort(() => Math.random() - 0.5);
+
     let div = document.createElement("div");
     div.classList.add("container-mid", "hide");
-    
-    countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " questions";
-  
+
     let question_DIV = document.createElement("p");
     question_DIV.classList.add("question");
-    question_DIV.innerHTML = i.question;
+    question_DIV.innerText = item.question;
     div.appendChild(question_DIV);
-   
-    div.innerHTML += `
-    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
-    <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
-    <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
-    <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
-    `;
+
+    item.options.forEach((optionText) => {
+      let btn = document.createElement("button");
+      btn.classList.add("option-div");
+      btn.innerText = optionText;
+      btn.addEventListener("click", () => checker(btn, item.correct));
+      div.appendChild(btn);
+    });
+
     quizContainer.appendChild(div);
-  }
+  });
 }
 
-function checker(userOption) {
+function checker(userOption, correctAnswer) {
   let userSolution = userOption.innerText;
-  let question =
-    document.getElementsByClassName("container-mid")[questionCount];
+  let question = document.getElementsByClassName("container-mid")[questionCount];
   let options = question.querySelectorAll(".option-div");
 
-  if (userSolution === quizArray[questionCount].correct) {
+  if (userSolution === correctAnswer) {
     userOption.classList.add("correct");
     scoreCount++;
   } else {
     userOption.classList.add("incorrect");
-   
     options.forEach((element) => {
-      if (element.innerText == quizArray[questionCount].correct) {
+      if (element.innerText === correctAnswer) {
         element.classList.add("correct");
       }
     });
@@ -175,9 +167,10 @@ function initial() {
   scoreCount = 0;
   count = 11;
   clearInterval(countdown);
-  timerDisplay();
   quizCreator();
+  countOfQuestion.innerHTML = "1 of " + quizArray.length + " questions";
   quizDisplay(questionCount);
+  timerDisplay();
 }
 
 startButton.addEventListener("click", () => {
@@ -188,5 +181,4 @@ startButton.addEventListener("click", () => {
 
 window.onload = () => {
   startScreen.classList.remove("hide");
-  displayContainer.classList.add("hide");
-};
+  displayContainer
