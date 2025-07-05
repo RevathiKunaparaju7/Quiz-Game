@@ -64,15 +64,15 @@ restart.addEventListener("click", () => {
 });
 
 nextBtn.addEventListener("click", () => {
-  questionCount += 1;
+  questionCount++;
   nextBtn.disabled = true;
 
   if (questionCount === quizArray.length) {
     displayContainer.classList.add("hide");
     scoreContainer.classList.remove("hide");
-    userScore.innerHTML = "Your score is " + scoreCount + " out of " + quizArray.length;
+    userScore.innerHTML = `Your score is ${scoreCount} out of ${quizArray.length}`;
   } else {
-    countOfQuestion.innerHTML = questionCount + 1 + " of " + quizArray.length + " questions";
+    countOfQuestion.innerHTML = `${questionCount + 1} of ${quizArray.length} questions`;
     quizDisplay(questionCount);
     count = 11;
     clearInterval(countdown);
@@ -112,7 +112,7 @@ const quizDisplay = (index) => {
 };
 
 function quizCreator() {
-  const shuffledQuiz = [...quizArray].sort(() => Math.random() - 0.5);
+  const shuffledQuiz = [...quizArray];
 
   shuffledQuiz.forEach((item) => {
     item.options.sort(() => Math.random() - 0.5);
@@ -168,6 +168,6 @@ function initial() {
   count = 11;
   clearInterval(countdown);
   quizCreator();
-  countOfQuestion.innerHTML = "1 of " + quizArray.length + " questions";
-  quizDisplay(questionCount
-
+  countOfQuestion.innerHTML = `1 of ${quizArray.length} questions`;
+  quizDisplay(questionCount);
+  timer
