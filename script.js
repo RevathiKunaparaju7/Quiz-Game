@@ -26,7 +26,7 @@ const quizArray = [
     correct: "Europe",
   },
   {
-    question: "Who invented Computer?",
+    question: "Who invented the Computer?",
     options: ["Charles Babbage", "Henry Luce", "Henry Babbage", "Charles Luce"],
     correct: "Charles Babbage",
   },
@@ -169,16 +169,5 @@ function initial() {
   clearInterval(countdown);
   quizCreator();
   countOfQuestion.innerHTML = "1 of " + quizArray.length + " questions";
-  quizDisplay(questionCount);
-  timerDisplay();
-}
+  quizDisplay(questionCount
 
-startButton.addEventListener("click", () => {
-  startScreen.classList.add("hide");
-  displayContainer.classList.remove("hide");
-  initial();
-});
-
-window.onload = () => {
-  startScreen.classList.remove("hide");
-  displayContainer
